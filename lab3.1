@@ -1,0 +1,235 @@
+public class Item {
+    private String name;
+    private double price;
+ 
+    public Item(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+ 
+    public String getName() {
+        return name;
+    }
+ 
+    public void setName(String name) {
+        this.name = name;
+    }
+ 
+    public double getPrice() {
+        return price;
+    }
+ 
+    public void setPrice(double price) {
+        this.price = price;
+    }
+ 
+    public void show() {
+        System.out.println("Назва товару: " + name);
+        System.out.println("Ціна товару: " + price);
+    }
+}
+public class Product extends Item {
+    private String brand;
+ 
+    public Product(String name, double price, String brand) {
+        super(name, price);
+        this.brand = brand;
+    }
+ 
+    public String getBrand() {
+        return brand;
+    }
+ 
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+ 
+    @Override
+    public void show() {
+        super.show();
+        System.out.println("Бренд продукту: " + brand);
+    }
+}
+public class Toy extends Item {
+    private String manufacturer;
+    private int recommendedAge;
+ 
+    public Toy(String name, double price, String manufacturer, int recommendedAge) {
+        super(name, price);
+        this.manufacturer = manufacturer;
+        this.recommendedAge = recommendedAge;
+    }
+ 
+    public String getManufacturer() {
+        return manufacturer;
+    }
+ 
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+ 
+    public int getRecommendedAge() {
+        return recommendedAge;
+    }
+ 
+    public void setRecommendedAge(int recommendedAge) {
+        this.recommendedAge = recommendedAge;
+    }
+ 
+    @Override
+    public void show() {
+        super.show();
+        System.out.println("Виробник іграшки: " + manufacturer);
+        System.out.println("Рекомендований вік: " + recommendedAge);
+    }
+}
+public class Toy extends Item {
+    private String manufacturer;
+    private int recommendedAge;
+ 
+    public Toy(String name, double price, String manufacturer, int recommendedAge) {
+        super(name, price);
+        this.manufacturer = manufacturer;
+        this.recommendedAge = recommendedAge;
+    }
+ 
+    public String getManufacturer() {
+        return manufacturer;
+    }
+ 
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+ 
+    public int getRecommendedAge() {
+        return recommendedAge;
+    }
+ 
+    public void setRecommendedAge(int recommendedAge) {
+        this.recommendedAge = recommendedAge;
+    }
+ 
+    @Override
+    public void show() {
+        super.show();
+        System.out.println("Виробник іграшки: " + manufacturer);
+        System.out.println("Рекомендований вік: " + recommendedAge);
+    }
+} 
+public class DairyProduct extends Product {
+    private String expirationDate;
+ 
+    public DairyProduct(String name, double price, String brand, String expirationDate) {
+        super(name, price, brand);
+        this.expirationDate = expirationDate;
+    }
+ 
+    public String getExpirationDate() {
+        return expirationDate;
+    }
+ 
+    public void setExpirationDate(String expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+ 
+    @Override
+    public void show() {
+        super.show();
+        System.out.println("Термін придатності: " + expirationDate);
+    }
+}
+import java.util.Scanner;
+ 
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+ 
+        String productName, productBrand, toyManufacturer, dairyProductExpirationDate;
+        double productPrice;
+        int toyRecommendedAge;
+ 
+        System.out.println("Введіть дані для товара:");
+        System.out.print("Назва товару: ");
+        productName = scanner.nextLine();
+        while (productName.matches(".*\\d.*")) {
+            System.out.print("Назва не може містити цифри. Введіть назву ще раз: ");
+            productName = scanner.nextLine();
+        }
+ 
+        System.out.print("Ціна: ");
+        while (!scanner.hasNextDouble()) {
+            System.out.print("Ціна повинна бути числом. Введіть ціну ще раз: ");
+            scanner.next();
+        }
+        productPrice = scanner.nextDouble();
+        scanner.nextLine();
+        System.out.print("Бренд товару: ");
+        productBrand = scanner.nextLine();
+        while (productBrand.matches(".*\\d.*")) {
+            System.out.print("Бренд не може містити цифри. Введіть бренд ще раз: ");
+            productBrand = scanner.nextLine();
+        }
+ 
+        System.out.println("Введіть дані для іграшки:");
+        System.out.print("Назва: ");
+        productName = scanner.nextLine();
+        while (productName.matches(".*\\d.*")) {
+            System.out.print("Назва не може містити цифри. Введіть назву ще раз: ");
+            productName = scanner.nextLine();
+        }
+        System.out.print("Ціна: ");
+        while (!scanner.hasNextDouble()) {
+            System.out.print("Ціна повинна бути числом. Введіть ціну ще раз: ");
+            scanner.next();
+        }
+        productPrice = scanner.nextDouble();
+        scanner.nextLine();
+        System.out.print("Виробник: ");
+        toyManufacturer = scanner.nextLine();
+        while (toyManufacturer.matches(".*\\d.*")) {
+            System.out.print("Виробник не може містити цифри. Введіть виробника ще раз: ");
+            toyManufacturer = scanner.nextLine();
+        }
+        System.out.print("Рекомендований вік: ");
+        while (!scanner.hasNextInt()) {
+            System.out.print("Рекомендований вік повинен бути цілим числом. Введіть вік ще раз: ");
+            scanner.next();
+        }
+        toyRecommendedAge = scanner.nextInt();
+        scanner.nextLine();
+ 
+        System.out.println("Введіть дані для молочного продукту:");
+        System.out.print("Назва: ");
+        productName = scanner.nextLine();
+        while (productName.matches(".*\\d.*")) {
+            System.out.print("Назва не може містити цифри. Введіть назву продукту: ");
+            productName = scanner.nextLine();
+        }
+        System.out.print("Ціна: ");
+        while (!scanner.hasNextDouble()) {
+            System.out.print("Ціна повинна бути числом. Введіть ціну ще раз: ");
+            scanner.next();
+        }
+        productPrice = scanner.nextDouble();
+        scanner.nextLine();
+        System.out.print("Термін придатності (у форматі рік-місяць-день): ");
+        dairyProductExpirationDate = scanner.nextLine();
+ 
+ 
+        System.out.println("\nДані про продукт:"); // Вивід данних
+        System.out.println("Назва: " + productName);
+        System.out.println("Ціна: " + productPrice);
+        System.out.println("Бренд: " + productBrand);
+ 
+        System.out.println("\nДані про іграшку:");
+        System.out.println("Назва: " + productName);
+        System.out.println("Ціна: " + productPrice);
+        System.out.println("Виробник: " + toyManufacturer);
+        System.out.println("Рекомендований вік: " + toyRecommendedAge);
+ 
+        System.out.println("\nДані про молочний продукт:");
+        System.out.println("Назва: " + productName);
+        System.out.println("Ціна: " + productPrice);
+        System.out.println("Термін придатності: " + dairyProductExpirationDate);
+    }
+}
