@@ -1,0 +1,285 @@
+abstract class Integer {
+    protected int[] digits;
+ 
+    public abstract Integer add(Integer other);
+    public abstract Integer subtract(Integer other);
+    public abstract Integer multiply(Integer other);
+ 
+    public Integer(int[] digits) {
+        this.digits = digits;
+    }
+ 
+    public int[] getDigits() {
+        return digits;
+    }
+ 
+    public void setDigits(int[] digits) {
+        this.digits = digits;
+    }
+ 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < digits.length; i++) {
+            sb.append(digits[i]);
+        }
+        return sb.toString();
+    }
+}
+class Heximal extends Integer {
+    private static final char[] HEX_CHARS = {'0', '1', '2', '3', '4', '5', '6', '7',
+            '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+ 
+    public Heximal(int[] digits) {
+        super(digits);
+        validateDigits(digits);
+    }
+ 
+    private void validateDigits(int[] digits) {
+        for (int digit : digits) {
+            if (digit < 0 || digit > 15) {
+                throw new IllegalArgumentException("Invalid hex digit: " + digit);
+            }
+        }
+    }
+ 
+    @Override
+    public Heximal add(Integer other) {
+        int[] otherDigits = other.getDigits();
+        int[] resultDigits = new int[Math.max(digits.length, otherDigits.length) + 1];
+        int carry = 0;
+ 
+        for (int i = 0; i < resultDigits.length; i++) {
+            int digitSum = carry;
+            if (i < digits.length) {
+                digitSum += digits[digits.length - i - 1];
+            }
+            if (i < otherDigits.length) {
+                digitSum += otherDigits[otherDigits.length - i - 1];
+            }
+            resultDigits[resultDigits.length - i - 1] = digitSum % 16;
+            carry = digitSum / 16;
+        }
+ 
+        while (resultDigits.length > 1 && resultDigits[0] == 0 ){
+            int[] newResultDigits = new int[resultDigits.length - 1];
+            for (int i = 0; i < newResultDigits.length; i++) {
+                newResultDigits[i] = resultDigits[i + 1];
+            }
+            resultDigits = newResultDigits;
+        }
+        return new Heximal(resultDigits);
+    }
+ 
+    @Override
+    public Heximal subtract(Integer other) {
+        int[] otherDigits = other.getDigits();
+        int[] resultDigits = new int[Math.max(digits.length, otherDigits.length)];
+        int borrow = 0;
+        for (int i = 0; i < resultDigits.length; i++) {
+            int digitDifference = borrow;
+            if (i < digits.length) {
+                digitDifference += digits[digits.length - i - 1];
+            }
+            if (i < otherDigits.length) {
+                digitDifference -= otherDigits[otherDigits.length - i - 1];
+            }
+            if (digitDifference < 0) {
+                digitDifference += 16;
+                borrow = -1;
+            } else {
+                borrow = 0;
+            }
+            resultDigits[resultDigits.length - i - 1] = digitDifference;
+        }
+ 
+        while (resultDigits.length > 1 && resultDigits[0] == 0) {
+            int[] newResultDigits = new int[resultDigits.length - 1];
+            for (int i = 0; i < newResultDigits.length; i++) {
+                newResultDigits[i] = resultDigits[i + 1];
+            }
+            resultDigits = newResultDigits;
+        }
+ 
+        return new Heximal(resultDigits);
+    }
+ 
+    @Override
+    public Heximal multiply(Integer other) {
+        int[] otherDigits = other.getDigits();
+        int[] resultDigits = new int[digits.length + otherDigits.length];
+        for (int i = 0; i < otherDigits.length; i++) {
+            int carry = 0;
+            for (int j = 0; j < digits.length; j++) {
+                int digitProduct = otherDigits[otherDigits.length - i - 1] * digits[digits.length - j - 1] + carry;
+                carry = digitProduct / 16;
+                digitProduct %= 16;
+                resultDigits[resultDigits.length - i - j - 1] += digitProduct;
+                if (resultDigits[resultDigits.length - i - j - 1] >= 16) {
+                    carry += resultDigits[resultDigits.length - i - j - 1] / 16;
+                    resultDigits[resultDigits.length - i - j - 1] %= 16;
+                }
+            }
+            if (carry != 0) {
+                resultDigits[resultDigits.length - i - digits.length - 1] += carry;
+            }
+        }
+ 
+        while (resultDigits.length > 1 && resultDigits[0] == 0) {
+            int[] newResultDigits = new int[resultDigits.length - 1];
+            for (int i = 0; i < newResultDigits.length; i++) {
+                newResultDigits[i] = resultDigits[i + 1];
+            }
+            resultDigits = newResultDigits;
+        }
+ 
+        return new Heximal(resultDigits);
+    }
+ 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int digit : digits) {
+            sb.append(HEX_CHARS[digit]);
+        }
+        return sb.toString();
+    }
+}
+import java.util.Arrays;
+ 
+class Binary extends Integer {
+    public Binary(int[] digits) {
+        super(digits);
+    }
+    @Override
+    public Binary add(Integer other) {
+        int[] otherDigits = other.getDigits();
+        int[] resultDigits = new int[Math.max(digits.length, otherDigits.length) + 1];
+        int carry = 0;
+ 
+        for (int i = 0; i < resultDigits.length; i++) {
+            int sum = carry;
+            if (i < digits.length) {
+                sum += digits[digits.length - i - 1];
+            }
+            if (i < otherDigits.length) {
+                sum += otherDigits[otherDigits.length - i - 1];
+            }
+            resultDigits[resultDigits.length - i - 1] = sum % 2;
+            carry = sum / 2;
+        }
+ 
+        while (resultDigits.length > 1 && resultDigits[0] == 0) {
+            resultDigits = Arrays.copyOfRange(resultDigits, 1, resultDigits.length);
+        }
+ 
+        return new Binary(resultDigits);
+    }
+ 
+    @Override
+    public Binary subtract(Integer other) {
+        int[] otherDigits = other.getDigits();
+        int[] resultDigits = new int[digits.length];
+        int borrow = 0;
+ 
+        for (int i = 0; i < digits.length; i++) {
+            int diff = digits[digits.length - i - 1] - borrow;
+            if (i < otherDigits.length) {
+                diff -= otherDigits[otherDigits.length - i - 1];
+            }
+            if (diff < 0) {
+                diff += 2;
+                borrow = 1;
+            } else {
+                borrow = 0;
+            }
+            resultDigits[resultDigits.length - i - 1] = diff;
+        }
+ 
+        while (resultDigits.length > 1 && resultDigits[0] == 0) {
+            resultDigits = Arrays.copyOfRange(resultDigits, 1, resultDigits.length);
+        }
+ 
+        return new Binary(resultDigits);
+    }
+ 
+    @Override
+    public Binary multiply(Integer other) {
+        int[] otherDigits = other.getDigits();
+        int[] resultDigits = new int[digits.length + otherDigits.length];
+ 
+        for (int i = digits.length - 1; i >= 0; i--) {
+            int carry = 0;
+            for (int j = otherDigits.length - 1; j >= 0; j--) {
+                int prod = digits[i] * otherDigits[j] + carry + resultDigits[i + j + 1];
+                resultDigits[i + j + 1] = prod % 2;
+                carry = prod / 2;
+            }
+            resultDigits[i] += carry;
+        }
+ 
+        while (resultDigits.length > 1 && resultDigits[0] == 0) {
+            resultDigits = Arrays.copyOfRange(resultDigits, 1, resultDigits.length);
+        }
+ 
+        return new Binary(resultDigits);
+    }
+ 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < digits.length; i++) {
+            sb.append(digits[i]);
+        }
+        return sb.toString();
+    }
+}
+import java.util.Scanner;
+ 
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+ 
+        int[] hexDigits1 = new int[3];
+        int[] hexDigits2 = new int[3];
+ 
+        System.out.println("Enter the first hexadecimal number:");
+        for (int i = 0; i < 3; i++) {
+            hexDigits1[i] = scanner.nextInt();
+        }
+ 
+        System.out.println("Enter the second hexadecimal number:");
+        for (int i = 0; i < 3; i++) {
+            hexDigits2[i] = scanner.nextInt();
+        }
+ 
+        Heximal hex1 = new Heximal(hexDigits1);
+        Heximal hex2 = new Heximal(hexDigits2);
+ 
+        System.out.println("Hexadecimal:");
+        System.out.println(hex1 + " + " + hex2 + " = " + hex1.add(hex2));
+        System.out.println(hex1 + " - " + hex2 + " = " + hex1.subtract(hex2));
+        System.out.println(hex1 + " * " + hex2 + " = " + hex1.multiply(hex2));
+ 
+        int[] binaryDigits1 = new int[8];
+        int[] binaryDigits2 = new int[8];
+ 
+        System.out.println("Enter the first binary number:");
+        for (int i = 0; i < 8; i++) {
+            binaryDigits1[i] = scanner.nextInt();
+        }
+ 
+        System.out.println("Enter the second binary number:");
+        for (int i = 0; i < 8; i++) {
+            binaryDigits2[i] = scanner.nextInt();
+        }
+ 
+        Binary bin1 = new Binary(binaryDigits1);
+        Binary bin2 = new Binary(binaryDigits2);
+ 
+        System.out.println("\nBinary:");
+        System.out.println(bin1 + " + " + bin2 + " = " + bin1.add(bin2));
+        System.out.println(bin1 + " - " + bin2 + " = " + bin1.subtract(bin2));
+        System.out.println(bin1 + " * " + bin2 + " = " + bin1.multiply(bin2));
+    }
+}
