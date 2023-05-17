@@ -1,0 +1,261 @@
+public interface NumberSystem {
+    NumberSystem add(NumberSystem other);
+    NumberSystem subtract(NumberSystem other);
+    NumberSystem multiply(NumberSystem other);
+}
+public class Heximal implements NumberSystem {
+    private int[] hexDigits;
+ 
+    public Heximal(int[] hexDigits) {
+        this.hexDigits = hexDigits;
+    }
+ 
+    public int[] getHexDigits() {
+        return hexDigits;
+    }
+ 
+    public void setHexDigits(int[] hexDigits) {
+        this.hexDigits = hexDigits;
+    }
+ 
+    @Override
+    public NumberSystem add(NumberSystem other) {
+        if (!(other instanceof Heximal)) {
+            throw new IllegalArgumentException("Cannot add different number systems");
+        }
+ 
+        Heximal hex = (Heximal) other;
+ 
+        int[] result = new int[hexDigits.length];
+        int carry = 0;
+ 
+        for (int i = hexDigits.length - 1; i >= 0; i--) {
+            int sum = hexDigits[i] + hex.getHexDigits()[i] + carry;
+ 
+            if (sum > 15) {
+                carry = 1;
+                sum -= 16;
+            } else {
+                carry = 0;
+            }
+ 
+            result[i] = sum;
+        }
+ 
+        return new Heximal(result);
+    }
+ 
+    @Override
+    public NumberSystem subtract(NumberSystem other) {
+        if (!(other instanceof Heximal)) {
+            throw new IllegalArgumentException("Cannot subtract different number systems");
+        }
+ 
+        Heximal hex = (Heximal) other;
+ 
+        int[] result = new int[hexDigits.length];
+        int borrow = 0;
+ 
+        for (int i = hexDigits.length - 1; i >= 0; i--) {
+            int difference = hexDigits[i] - hex.getHexDigits()[i] - borrow;
+ 
+            if (difference < 0) {
+                borrow = 1;
+                difference += 16;
+            } else {
+                borrow = 0;
+            }
+ 
+            result[i] = difference;
+        }
+ 
+        return new Heximal(result);
+    }
+ 
+    @Override
+    public NumberSystem multiply(NumberSystem other) {
+        if (!(other instanceof Heximal)) {
+            throw new IllegalArgumentException("Cannot multiply different number systems");
+        }
+ 
+        Heximal hex = (Heximal) other;
+ 
+        
+        int[] result = new int[hexDigits.length + hex.getHexDigits().length];
+ 
+        for (int i = hexDigits.length - 1; i >= 0; i--) {
+            int carry = 0;
+ 
+            for (int j = hex.getHexDigits().length - 1; j >= 0; j--) {
+                int product = hexDigits[i] * hex.getHexDigits()[j] + carry;
+                int index = i + j + 1;
+ 
+                product += result[index];
+ 
+                carry = product / 16;
+                result[index] = product % 16;
+            }
+ 
+            result[i] += carry;
+        }
+
+        int startIndex = 0;
+ 
+        while (startIndex < result.length && result[startIndex] == 0) {
+            startIndex++;
+        }
+ 
+        if (startIndex == result.length) {
+            return new Heximal(new int[] { 0 });
+        } else {
+            int[] finalResult = new int[result.length - startIndex];
+ 
+            for (int i = 0; i < finalResult.length; i++) {
+                finalResult[i] = result[startIndex + i];
+            }
+ 
+            return new Heximal(finalResult);
+        }
+    }
+}
+public class Binary implements NumberSystem {
+private int[] binaryDigits;
+
+public Binary(int[] binaryDigits) {
+    this.binaryDigits = binaryDigits;
+}
+ 
+public int[] getBinaryDigits() {
+    return binaryDigits;
+}
+ 
+public void setBinaryDigits(int[] binaryDigits) {
+    this.binaryDigits = binaryDigits;
+}
+ 
+@Override
+public NumberSystem add(NumberSystem other) {
+    if (!(other instanceof Binary)) {
+        throw new IllegalArgumentException("Cannot add different number systems");
+    }
+ 
+    Binary binary = (Binary) other;
+ 
+    int[] result = new int[binaryDigits.length];
+    int carry = 0;
+ 
+    for (int i = binaryDigits.length - 1; i >= 0; i--) {
+        int sum = binaryDigits[i] + binary.getBinaryDigits()[i] + carry;
+ 
+        if (sum > 1) {
+            carry = 1;
+            sum -= 2;
+        } else {
+            carry = 0;
+        }
+ 
+        result[i] = sum;
+    }
+ 
+    return new Binary(result);
+}
+ 
+@Override
+public NumberSystem subtract(NumberSystem other) {
+    if (!(other instanceof Binary)) {
+        throw new IllegalArgumentException("Cannot subtract different number systems");
+    }
+ 
+    Binary binary = (Binary) other;
+ 
+    int[] result = new int[binaryDigits.length];
+    int borrow = 0;
+ 
+    for (int i = binaryDigits.length - 1; i >= 0; i--) {
+        int difference = binaryDigits[i] - binary.getBinaryDigits()[i] - borrow;
+ 
+        if (difference < 0) {
+            borrow = 1;
+            difference += 2;
+        } else {
+            borrow = 0;
+        }
+ 
+        result[i] = difference;
+    }
+ 
+    return new Binary(result);
+}
+ 
+@Override
+public NumberSystem multiply(NumberSystem other) {
+    if (!(other instanceof Binary)) {
+        throw new IllegalArgumentException("Cannot multiply different number systems");
+    }
+ 
+    Binary binary = (Binary) other;
+ 
+    int[] result = new int[binaryDigits.length * 2];
+ 
+    for (int i = binaryDigits.length - 1; i >= 0; i--) {
+        int carry = 0;
+ 
+        for (int j = binary.getBinaryDigits().length - 1; j >= 0; j--) {
+            int product = binaryDigits[i] * binary.getBinaryDigits()[j] + carry + result[i + j + 1];
+            carry = product / 2;
+            result[i + j + 1] = product % 2;
+        }
+ 
+        result[i] = carry;
+    }
+ 
+    return new Binary(result);
+}
+
+import java.util.Scanner;
+public class Main { public static void main(String[] args) { 
+Scanner scanner = new Scanner(System.in);
+System.out.print("Enter first heximal number : ");
+    String hexString1 = scanner.next();
+    Heximal hex1 = new Heximal(hexString1);
+ 
+    // Input second heximal number
+    System.out.print("Enter second heximal number : ");
+    String hexString2 = scanner.next();
+    Heximal hex2 = new Heximal(hexString2);
+ 
+    // Add heximal numbers
+    Heximal hexSum = (Heximal) hex1.add(hex2);
+    System.out.println("Sum of heximal numbers: " + hexSum.toString());
+ 
+    // Subtract heximal numbers
+    Heximal hexDifference = (Heximal) hex1.subtract(hex2);
+    System.out.println("Difference of heximal numbers: " + hexDifference.toString());
+ 
+    // Multiply heximal numbers
+    Heximal hexProduct = (Heximal) hex1.multiply(hex2);
+    System.out.println("Product of heximal numbers: " + hexProduct.toString());
+ 
+    // Input first binary number
+    System.out.print("Enter first binary number: ");
+    String binaryString1 = scanner.next();
+    Binary binary1 = new Binary(binaryString1);
+ 
+    // Input second binary number
+    System.out.print("Enter second binary number: ");
+    String binaryString2 = scanner.next();
+    Binary binary2 = new Binary(binaryString2);
+ 
+    // Add binary numbers
+    Binary binarySum = (Binary) binary1.add(binary2);
+    System.out.println("Sum of binary numbers: " + binarySum.toString());
+ 
+    // Subtract binary numbers
+    Binary binaryDifference = (Binary) binary1.subtract(binary2);
+    System.out.println("Difference of binary numbers: " + binaryDifference.toString());
+ 
+    // Multiply binary numbers
+    Binary binaryProduct = (Binary) binary1.multiply(binary2);
+    System.out.println("Product of binary numbers: " + binaryProduct.toString());
+}
+}
